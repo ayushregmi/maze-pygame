@@ -85,11 +85,16 @@ for node in nodeList:
 mouse_click = False
 x, y = (0, 0)
 
+
 start_node = None
 end_node = None
 keydown = False
+
 while run:
        
+    nodes = []
+    visitedNodes = []
+    
     for node in nodeList:
         for n in node.pathFrom:
             x = (node.x + n.x) / 2
@@ -160,8 +165,28 @@ while run:
         
         if event.type == pygame.KEYUP:
             keydown = False
-            
     
+    visitedNodes.append(start_node)
+    if start_node != None and end_node != None:
+        while(start_node != end_node):
+            minVal = 0
+            start_i, start_j = start_node.coordinates()
+            temp = []
+            for i in range(len(DIRECTIONSX)):
+                new_x = start_i + DIRECTIONSX[i]
+                new_y = start_j + DIRECTIONSY[i]
+                
+                if new_y >=0 and new_x >= 0 and new_x < COLUMN and new_y < ROW:
+                    
+                    for node in nodeList:
+                        if node.i == new_x and node.j == new_y and (node not in visitedNodes) and (node in start_node.pathFrom) and (node not in nodes):
+                            node.cost += start_node + 2
+                            nodes.append(node)
+                        
+    
+            for node in nodes:
+                
+                pass
     
     pygame.display.update()
     
