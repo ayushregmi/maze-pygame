@@ -8,10 +8,10 @@ ROW_WIDTH = 20
 COLUMN_WIDTH = 20
 ROW_GAP = 2
 COLUMN_GAP = 2
-TOP_GAP = 5
-BOTTOM_GAP = 5
-LEFT_GAP = 5
-RIGHT_GAP = 5
+TOP_GAP = 1
+BOTTOM_GAP = 1
+LEFT_GAP = 1
+RIGHT_GAP = 1
 SCREEN_HEIGHT = ROW * ROW_WIDTH + (ROW + 1) * ROW_GAP + LEFT_GAP * 2
 SCREEN_WIDTH = COLUMN * COLUMN_WIDTH + (COLUMN + 1) * COLUMN_GAP + TOP_GAP * 2
 DIRECTIONSX = [0, 1, 0, -1]
@@ -26,6 +26,7 @@ class Node:
         self.y = j * COLUMN_WIDTH + (j + 1) * COLUMN_GAP + TOP_GAP
         self.visited = False
         self.pathFrom = []
+        self.cost = 0
         self.color = (255, 255, 255)
         pass
     
@@ -61,4 +62,10 @@ class Stack:
     def print(self):
         for n in self.__stack:
             print(n.coordinates())
+            
+    def pop_back(self):
+        n = self.__stack[0]
+        self.__stack.remove(n)
+        self.stackHead -= 1
+        return n
  

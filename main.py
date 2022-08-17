@@ -1,29 +1,15 @@
+from operator import truediv
 import random
+from tracemalloc import start
+from turtle import right
 import pygame
 from components import *
 import time
 import sys
 
-sys.setrecursionlimit(1000000)
+# sys.setrecursionlimit(1000000)
 
 pygame.init()
-
-# defining number, size and width of nodes
-# ROW = 20
-# COLUMN = 40
-# ROW_WIDTH = 20
-# COLUMN_WIDTH = 20
-# ROW_GAP = 2
-# COLUMN_GAP = 2
-# TOP_GAP = 5
-# BOTTOM_GAP = 5
-# LEFT_GAP = 5
-# RIGHT_GAP = 5
-# SCREEN_HEIGHT = ROW * ROW_WIDTH + (ROW + 1) * ROW_GAP + LEFT_GAP * 2
-# SCREEN_WIDTH = COLUMN * COLUMN_WIDTH + (COLUMN + 1) * COLUMN_GAP + TOP_GAP * 2
-# DIRECTIONSX = [0, 1, 0, -1]
-# DIRECTIONSY = [1, 0, -1, 0]   
-    
 #initialize screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("maze")
@@ -52,31 +38,6 @@ run = True
 
 start_node = random.choice(nodeList)
 
-for node in nodeList:
-    if node.i == start_node.i and node.j == start_node.j:
-        # node.draw(screen, (30, 30, 30))
-        pass
-
-# temp = []       
-# for i in range(len(DIRECTIONSX)):
-#     new_x = start_i + DIRECTIONSX[i]
-#     new_y = start_j + DIRECTIONSY[i]
-#     # print(new_x, new_y)    
-    
-#     if new_y >=0 and new_x >= 0 and new_x < COLUMN and new_y < ROW:
-#         # print(new_x, new_y)
-        
-#         for node in nodeList:
-#             if node.i == new_x and node.j == new_y and not node.visited:
-#                 node.draw(screen,(0, 0, 255))
-                
-#                 temp.append(node)
-                
-# while(len(temp) != 0):
-#     n = random.choice(temp)
-#     temp.remove(n)
-#     stack.push(n)
-
 while True:
     start_i, start_j = start_node.coordinates()
     temp = []
@@ -102,7 +63,8 @@ while True:
         temp.remove(n)
         stack.push(n)
     
-    start_node = stack.pop()
+    i = random.choice(range(2))
+    start_node = stack.pop() if i != 1 else stack.pop_back()
     
     if(stack.stackHead == 0):
         break
@@ -120,17 +82,84 @@ for node in nodeList:
         n.draw(screen)
         pygame.draw.rect(screen, (255, 255, 255), (x, y, ROW_WIDTH, COLUMN_WIDTH))
 
-while run:                
-                
+mouse_click = False
+x, y = (0, 0)
+
+start_node = None
+end_node = None
+keydown = False
+while run:
+       
+    for node in nodeList:
+        for n in node.pathFrom:
+            x = (node.x + n.x) / 2
+            y = (node.y + n.y) / 2
+            
+            #drawing the current node, it parent node and midpoint between them
+            node.draw(screen)
+            n.draw(screen)
+            pygame.draw.rect(screen, (255, 255, 255), (x, y, ROW_WIDTH, COLUMN_WIDTH))        
+    
+    if start_node != None:
+            start_node.draw(screen, (255,0,0))
+    
+    if end_node != None:
+        end_node.draw(screen, (0, 0, 255))
     #keyboard bindings
     for event in pygame.event.get():
         #to close the window
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             run = False
+            
+            
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_LSHIFT:
+            keydown = True
         
-        if(event.type == pygame.KEYDOWN):
-            if(event.key == pygame.K_LSHIFT):
-                pass
+        if pygame.mouse.get_pressed(3)[0] and keydown and not mouse_click:
+            x, y = pygame.mouse.get_pos()
+            x = int(x - x % (COLUMN_WIDTH+ COLUMN_GAP)) / (COLUMN_WIDTH + COLUMN_GAP)
+            y = int(y - y % (ROW_WIDTH + ROW_GAP)) / (ROW_WIDTH + ROW_GAP)
+            
+            if(start_node == None):
+                for node in nodeList:
+                    if(node.i == x and node.j == y):
+                        start_node = node
+            
+            else:
+                if(x, y) == (start_node.i, start_node.j):
+                    start_node = None
+                else:
+                    for node in nodeList:
+                        if(node.i == x and node.j == y):
+                            start_node = node
+                
+            
+            mouse_click = True
+        
+        elif pygame.mouse.get_pressed(3)[0] and not mouse_click:
+            x, y = pygame.mouse.get_pos()
+            x = int(x - x % (COLUMN_WIDTH+ COLUMN_GAP)) / (COLUMN_WIDTH + COLUMN_GAP)
+            y = int(y - y % (ROW_WIDTH + ROW_GAP)) / (ROW_WIDTH + ROW_GAP)
+            
+            if(end_node == None):
+                for node in nodeList:
+                    if(node.i == x and node.j == y):
+                        end_node = node
+            
+            else:
+                if(x, y) == (end_node.i, end_node.j):
+                    end_node = None
+                else:
+                    for node in nodeList:
+                        if(node.i == x and node.j == y):
+                            end_node = node
+            mouse_click = True
+        
+        if not pygame.mouse.get_pressed(3)[0] and mouse_click:
+            mouse_click = False
+        
+        if event.type == pygame.KEYUP:
+            keydown = False
             
     
     
