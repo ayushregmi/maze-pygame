@@ -57,22 +57,15 @@ end_node = None
 keydown = False
 path_found = False
 
+Loading = True
+
 run = True
 while run:
-    for row in nodeList:
-        for node in row:
-            node.visited = False
-            node.draw(screen, (0, 0, 100))
-            x, y = node.getPixel()
-            for n in node.pathFrom:
-                nx, ny = n.getPixel()
-                
-                pygame.draw.rect(screen, (0, 0, 100), ((x + nx)/2, (y+ny)/2, ROW_WIDTH, COLUMN_WIDTH))
+    
             
 
     
     nodes = []
-    visitedNodes = []
     #keyboard bindings
     for event in pygame.event.get():
         #to close the window
@@ -96,6 +89,7 @@ while run:
                     for node in row:
                         if(node.i == x and node.j == y):
                             start_node = node
+                            
             else:
                 if(x, y) == (start_node.i, start_node.j):
                     start_node = None
@@ -105,6 +99,7 @@ while run:
                             if(node.i == x and node.j == y):
                                 start_node = node
             mouse_click = True
+            Loading = True
         
         #checking left_mouseclick
         elif pygame.mouse.get_pressed(3)[0] and not mouse_click:
@@ -128,6 +123,7 @@ while run:
                             if(node.i == x and node.j == y):
                                 end_node = node
             mouse_click = True
+            Loading = True
         
         if not pygame.mouse.get_pressed(3)[0] and mouse_click:
             mouse_click = False
@@ -135,7 +131,20 @@ while run:
         if event.type == pygame.KEYUP:
             keydown = False
 
-    # if not path_found:
+    if(Loading):
+        print("drawing nodes")
+        for row in nodeList:
+            for node in row:
+                node.visited = False
+                node.draw(screen, (0, 0, 100))
+                x, y = node.getPixel()
+                for n in node.pathFrom:
+                    nx, ny = n.getPixel()
+                    
+                    pygame.draw.rect(screen, (0, 0, 100), ((x + nx)/2, (y+ny)/2, ROW_WIDTH, COLUMN_WIDTH))
+
+
+    #finding the path between start and end using backtracking
     if not path_found:
         current_node = start_node
         if start_node != None and end_node != None:
@@ -173,11 +182,14 @@ while run:
             pygame.draw.line(screen, (100, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),3)
             current = parent
     
-    if start_node != None:
-            start_node.draw(screen, (255,0,0))
-    
-    if end_node != None:
-        end_node.draw(screen, (0, 0, 255))
+    if Loading:
+        print("loading start and end")
+        Loading = False
+        if start_node != None:
+                start_node.draw(screen, (255,0,0))
+        
+        if end_node != None:
+            end_node.draw(screen, (0, 0, 255))
 
 
     pygame.display.update()
