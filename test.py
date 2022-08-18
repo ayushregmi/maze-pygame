@@ -28,12 +28,23 @@ for row in nodeList:
     for node in row:
         node.draw(screen, (190, 178, 200))
 
+prevNode = None
 
-currentCell.draw(screen, (0, 0, 100))
-while visitedCells < ROW * COLUMN:
+skip = False
+
+while visitedCells <= ROW * COLUMN:
+
+    #keyboard bindings
+    for event in pygame.event.get():
+        #to close the window
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
+            skip = True
+
     currentCell.setVisited()
+    currentCell.draw(screen, (0, 100, 0))
     neighbours = []
-    pygame.time.delay(5)
+    if not skip:
+        pygame.time.delay(5)
     x, y = currentCell.coordinates()
     for i in range(len(DIRECTIONSX)):
         nx = x + DIRECTIONSX[i]
@@ -42,21 +53,30 @@ while visitedCells < ROW * COLUMN:
         if nx >= 0 and nx < COLUMN and ny >= 0 and ny < ROW and not nodeList[nx][ny].visited:
             neighbours.append(nodeList[nx][ny])
     if(len(neighbours) == 0):
-        currentCell = stack.pop()
+        currentCell.draw(screen, (0, 0, 100))
+        if(stack.stackHead != 0):
+            c = stack.pop()
+            nx, ny = c.getPixel()
+            x, y = currentCell.getPixel()
+            pygame.draw.rect(screen, (0, 0, 100), ((x+ nx)/2, (ny + y)/2, ROW_WIDTH, COLUMN_WIDTH))
+            currentCell = c
+            
+        else:
+            break
     else:
         stack.push(currentCell)
         current = random.choice(neighbours)
         X, Y = currentCell.getPixel()
         nX, nY = current.getPixel()
         currentCell.addPath(current)
-        pygame.draw.rect(screen, (0, 0, 100), ((X + nX)/2, (Y + nY)/2, ROW_WIDTH, COLUMN_WIDTH))
-
+        if not skip:
+            pygame.draw.rect(screen, (0, 100, 0), ((X + nX)/2, (Y + nY)/2, ROW_WIDTH, COLUMN_WIDTH))
         currentCell = current
 
 
         visitedCells += 1
-    currentCell.draw(screen, (0, 0, 100))
-    pygame.display.update()
+    if not skip:
+        pygame.display.update()
         
 
 
@@ -162,8 +182,8 @@ while run:
         current_node = start_node
         if start_node != None and end_node != None:
             stack = Stack()
+            minValue = 1000000
             while(current_node != end_node):
-                minValue = 1000000
                 canVisit = []
                 
                 for node in current_node.pathFrom:
