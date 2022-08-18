@@ -170,8 +170,10 @@ while run:
                     current_node = stack.pop()
 
             path_found = True
+            Loading = True
             # print('pathfound')
-    else:
+    
+    if Loading and path_found:
         current = end_node
         # drawing the path
         while(current != start_node): #looping until the current node is the starting node
@@ -181,6 +183,8 @@ while run:
             # pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (ROW_WIDTH + COLUMN_WIDTH) / 8)
             pygame.draw.line(screen, (100, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),3)
             current = parent
+    
+        print("path")
     
     if Loading:
         print("loading start and end")
