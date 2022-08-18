@@ -1,5 +1,6 @@
 
 import random
+from turtle import delay
 import pygame
 from components import *
 
@@ -23,9 +24,16 @@ currentCell = nodeList[random.choice(range(COLUMN))][random.choice((range(ROW)))
 
 stack = Stack()
 
+for row in nodeList:
+    for node in row:
+        node.draw(screen, (190, 178, 200))
+
+
+currentCell.draw(screen, (0, 0, 100))
 while visitedCells < ROW * COLUMN:
     currentCell.setVisited()
     neighbours = []
+    pygame.time.delay(5)
     x, y = currentCell.coordinates()
     for i in range(len(DIRECTIONSX)):
         nx = x + DIRECTIONSX[i]
@@ -38,15 +46,20 @@ while visitedCells < ROW * COLUMN:
     else:
         stack.push(currentCell)
         current = random.choice(neighbours)
-
+        X, Y = currentCell.getPixel()
+        nX, nY = current.getPixel()
         currentCell.addPath(current)
+        pygame.draw.rect(screen, (0, 0, 100), ((X + nX)/2, (Y + nY)/2, ROW_WIDTH, COLUMN_WIDTH))
 
         currentCell = current
 
+
         visitedCells += 1
+    currentCell.draw(screen, (0, 0, 100))
+    pygame.display.update()
         
 
-    pass
+
 
 mouse_click = False
 x, y = (0, 0)
@@ -57,7 +70,7 @@ end_node = None
 keydown = False
 path_found = False
 
-Loading = True
+Loading = False
 
 run = True
 while run:
@@ -175,6 +188,12 @@ while run:
     
     if Loading and path_found:
         current = end_node
+        if Loading:
+            if start_node != None:
+                    start_node.draw(screen, (255,0,0))
+            
+            if end_node != None:
+                end_node.draw(screen, (0, 0, 255))
         # drawing the path
         while(current != start_node): #looping until the current node is the starting node
             parent = current.parent
@@ -183,6 +202,8 @@ while run:
             # pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (ROW_WIDTH + COLUMN_WIDTH) / 8)
             pygame.draw.line(screen, (100, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),3)
             current = parent
+            pygame.time.delay(5)
+            pygame.display.update()
     
         print("path")
     
