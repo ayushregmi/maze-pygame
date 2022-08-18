@@ -1,4 +1,5 @@
 import pygame
+import math
 # from main import ROW, COLUMN, ROW_WIDTH, COLUMN_WIDTH, ROW_GAP, COLUMN_GAP, TOP_GAP, BOTTOM_GAP, LEFT_GAP, RIGHT_GAP
 
 # defining number, size and width of nodes
@@ -28,6 +29,7 @@ class Node:
         self.pathFrom = []
         self.cost = 0
         self.color = (255, 255, 255)
+        self.parent = None
         pass
     
     def draw(self,screen, color = None):
@@ -45,6 +47,15 @@ class Node:
         
     def coordinates(self):
         return self.i, self.j
+    
+    def distance(self, node):
+        return math.sqrt((node.i - self.i) ** 2 + (node.j - self.j) ** 2)
+
+    def setParent(self, node):
+        self.parent = node
+    
+    def getPixel(self):
+        return self.x, self.y
 
 class Stack:
     def __init__(self):

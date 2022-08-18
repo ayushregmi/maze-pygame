@@ -1,11 +1,8 @@
-from operator import truediv
 import random
-from tracemalloc import start
-from turtle import right
+from turtle import distance
+from xmlrpc.client import MAXINT
 import pygame
 from components import *
-import time
-import sys
 
 # sys.setrecursionlimit(1000000)
 
@@ -36,7 +33,8 @@ for i in range(COLUMN):
 
 run = True
 
-start_node = random.choice(nodeList)
+# start_node = random.choice(nodeList)
+start_node = nodeList[0]
 
 while True:
     start_i, start_j = start_node.coordinates()
@@ -89,6 +87,7 @@ x, y = (0, 0)
 start_node = None
 end_node = None
 keydown = False
+path_found = False
 
 while run:
        
@@ -96,6 +95,8 @@ while run:
     visitedNodes = []
     
     for node in nodeList:
+        node.visited = False
+        node.cost = 0
         for n in node.pathFrom:
             x = (node.x + n.x) / 2
             y = (node.y + n.y) / 2
@@ -105,31 +106,29 @@ while run:
             n.draw(screen)
             pygame.draw.rect(screen, (255, 255, 255), (x, y, ROW_WIDTH, COLUMN_WIDTH))        
     
-    if start_node != None:
-            start_node.draw(screen, (255,0,0))
     
-    if end_node != None:
-        end_node.draw(screen, (0, 0, 255))
     #keyboard bindings
     for event in pygame.event.get():
         #to close the window
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             run = False
             
-            
+        #selecting starting and ending nodes
         if event.type == pygame.KEYDOWN and event.key == pygame.K_LSHIFT:
             keydown = True
         
+        #checking shift + left_mouse_click
         if pygame.mouse.get_pressed(3)[0] and keydown and not mouse_click:
             x, y = pygame.mouse.get_pos()
             x = int(x - x % (COLUMN_WIDTH+ COLUMN_GAP)) / (COLUMN_WIDTH + COLUMN_GAP)
             y = int(y - y % (ROW_WIDTH + ROW_GAP)) / (ROW_WIDTH + ROW_GAP)
             
+            path_found = False
+            #selecting the starting node
             if(start_node == None):
                 for node in nodeList:
                     if(node.i == x and node.j == y):
                         start_node = node
-            
             else:
                 if(x, y) == (start_node.i, start_node.j):
                     start_node = None
@@ -137,20 +136,20 @@ while run:
                     for node in nodeList:
                         if(node.i == x and node.j == y):
                             start_node = node
-                
-            
             mouse_click = True
         
+        #checking left_mouseclick
         elif pygame.mouse.get_pressed(3)[0] and not mouse_click:
             x, y = pygame.mouse.get_pos()
             x = int(x - x % (COLUMN_WIDTH+ COLUMN_GAP)) / (COLUMN_WIDTH + COLUMN_GAP)
             y = int(y - y % (ROW_WIDTH + ROW_GAP)) / (ROW_WIDTH + ROW_GAP)
             
+            path_found = False
+            #selecting the ending node
             if(end_node == None):
                 for node in nodeList:
                     if(node.i == x and node.j == y):
                         end_node = node
-            
             else:
                 if(x, y) == (end_node.i, end_node.j):
                     end_node = None
@@ -166,28 +165,53 @@ while run:
         if event.type == pygame.KEYUP:
             keydown = False
     
-    visitedNodes.append(start_node)
-    if start_node != None and end_node != None:
-        while(start_node != end_node):
-            minVal = 0
-            start_i, start_j = start_node.coordinates()
-            temp = []
-            for i in range(len(DIRECTIONSX)):
-                new_x = start_i + DIRECTIONSX[i]
-                new_y = start_j + DIRECTIONSY[i]
-                
-                if new_y >=0 and new_x >= 0 and new_x < COLUMN and new_y < ROW:
+    # if not path_found:
+    if not path_found:
+        current_node = start_node
+        if start_node != None and end_node != None:
+            while(current_node != end_node):
+                visitedNodes.append(current_node)
+                minVal = 1000000
+                current_i, current_j = current_node.coordinates()
+                print(current_i, current_j)
+
+                #determing the neighbours
+                for i in range(len(DIRECTIONSX)):
+                    new_x = current_i + DIRECTIONSX[i]
+                    new_y = current_j + DIRECTIONSY[i]
                     
-                    for node in nodeList:
-                        if node.i == new_x and node.j == new_y and (node not in visitedNodes) and (node in start_node.pathFrom) and (node not in nodes):
-                            node.cost += start_node + 2
-                            nodes.append(node)
+                    if new_y >=0 and new_x >= 0 and new_x < COLUMN and new_y < ROW:
                         
-    
-            for node in nodes:
+                        for node in nodeList:
+                            if node.i == new_x and node.j == new_y and (node not in visitedNodes) and (node in current_node.pathFrom) and (node not in nodes):
+                                node.cost += current_node.cost + 1
+                                node.setParent(current_node)
+                                nodes.append(node)  
+                # print(nodes)
+                for node in nodes:
+                    if node.distance(end_node) < minVal:
+                        current_node = node
+                        minVal = current_node.cost
+        
                 
-                pass
+                nodes.remove(current_node)
+            path_found = True
+            print('pathfound')
+    else:
+        current = end_node
+        # drawing the path
+        while(current != start_node): #looping until the current node is the starting node
+            parent = current.parent
+            current_x, current_y = current.getPixel()
+            parent_x, parent_y = parent.getPixel()
+            pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2))
+            current = parent
+    
+    if start_node != None:
+            start_node.draw(screen, (255,0,0))
+    
+    if end_node != None:
+        end_node.draw(screen, (0, 0, 255))
     
     pygame.display.update()
-    
     
