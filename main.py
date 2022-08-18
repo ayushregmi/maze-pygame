@@ -202,7 +202,7 @@ while run:
         while(current != start_node): #looping until the current node is the starting node
             parent = current.parent
             current_x, current_y = current.getPixel()
-            parent_x, parent_y = parent.getPixel()
+            parent_x, parent_y = parent.getPiclearxel()
             pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), 3)
             pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),1)
             current = parent
