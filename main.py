@@ -1,6 +1,4 @@
 import random
-from turtle import distance
-from xmlrpc.client import MAXINT
 import pygame
 from components import *
 
