@@ -90,7 +90,7 @@ keydown = False
 path_found = False
 
 while run:
-       
+    
     nodes = []
     visitedNodes = []
     
@@ -105,7 +105,6 @@ while run:
             node.draw(screen)
             n.draw(screen)
             pygame.draw.rect(screen, (255, 255, 255), (x, y, ROW_WIDTH, COLUMN_WIDTH))        
-    
     
     #keyboard bindings
     for event in pygame.event.get():
@@ -204,7 +203,8 @@ while run:
             parent = current.parent
             current_x, current_y = current.getPixel()
             parent_x, parent_y = parent.getPixel()
-            pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2))
+            pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), 3)
+            pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),1)
             current = parent
     
     if start_node != None:
