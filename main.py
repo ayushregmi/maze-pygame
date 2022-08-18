@@ -203,8 +203,8 @@ while run:
             parent = current.parent
             current_x, current_y = current.getPixel()
             parent_x, parent_y = parent.getPixel()
-            pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), 3)
-            pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),1)
+            pygame.draw.circle(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (ROW_WIDTH + COLUMN_WIDTH) / 4)
+            pygame.draw.line(screen, (255, 0, 0), (current_x + ROW_WIDTH / 2, current_y + COLUMN_WIDTH / 2), (parent_x + ROW_WIDTH / 2, parent_y + COLUMN_WIDTH / 2),3)
             current = parent
     
     if start_node != None:
