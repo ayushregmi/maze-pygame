@@ -3,12 +3,12 @@ import math
 # from main import ROW, COLUMN, ROW_WIDTH, COLUMN_WIDTH, ROW_GAP, COLUMN_GAP, TOP_GAP, BOTTOM_GAP, LEFT_GAP, RIGHT_GAP
 
 # defining number, size and width of nodes
-ROW = 30
-COLUMN = 40
+ROW = 80
+COLUMN = 80
 ROW_WIDTH = 10
 COLUMN_WIDTH = 10
-ROW_GAP = 10
-COLUMN_GAP = 10
+ROW_GAP = 2
+COLUMN_GAP = 2
 TOP_GAP = 1
 BOTTOM_GAP = 1
 LEFT_GAP = 1
@@ -56,6 +56,9 @@ class Node:
     
     def getPixel(self):
         return self.x, self.y
+
+    def print(self):
+        print(self.x, self.y)
 
 class Stack:
     def __init__(self):

@@ -135,38 +135,31 @@ while run:
         if event.type == pygame.KEYUP:
             keydown = False
 
-
     # if not path_found:
     if not path_found:
         current_node = start_node
         if start_node != None and end_node != None:
+            stack = Stack()
             while(current_node != end_node):
-                visitedNodes.append(current_node)
-                minVal = 1000000
-                current_i, current_j = current_node.coordinates()
-                # print(current_i, current_j)
-
-                #determing the neighbours
-                for i in range(len(DIRECTIONSX)):
-                    new_x = current_i + DIRECTIONSX[i]
-                    new_y = current_j + DIRECTIONSY[i]
-                    
-                    if new_y >=0 and new_x >= 0 and new_x < COLUMN and new_y < ROW:
-                        
-                        for row in nodeList:
-                            for node in row:
-                                if node.i == new_x and node.j == new_y and (node not in visitedNodes) and (node in current_node.pathFrom) and (node not in nodes):
-                                    node.cost += current_node.cost + 1
-                                    node.setParent(current_node)
-                                    nodes.append(node)  
-                # print(nodes)
-                for node in nodes:
-                    if node.distance(end_node) < minVal:
-                        current_node = node
-                        minVal = current_node.cost
-        
+                minValue = 1000000
+                canVisit = []
                 
-                nodes.remove(current_node)
+                for node in current_node.pathFrom:
+                    if not node.visited:
+                        canVisit.append(node)
+                
+                if len(canVisit) != 0:
+                    for node in canVisit:
+                        if node.distance(end_node) < minValue:
+                            n = node
+                    
+                    n.setVisited()
+                    stack.push(current_node)
+                    n.setParent(current_node)
+                    current_node = n
+                else:
+                    current_node = stack.pop()
+
             path_found = True
             # print('pathfound')
     else:
