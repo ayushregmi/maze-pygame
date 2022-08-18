@@ -72,7 +72,6 @@ while run:
 
     
     nodes = []
-    visitedNodes = []
     #keyboard bindings
     for event in pygame.event.get():
         #to close the window
