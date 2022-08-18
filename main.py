@@ -173,7 +173,7 @@ while run:
                 visitedNodes.append(current_node)
                 minVal = 1000000
                 current_i, current_j = current_node.coordinates()
-                print(current_i, current_j)
+                # print(current_i, current_j)
 
                 #determing the neighbours
                 for i in range(len(DIRECTIONSX)):
@@ -196,7 +196,7 @@ while run:
                 
                 nodes.remove(current_node)
             path_found = True
-            print('pathfound')
+            # print('pathfound')
     else:
         current = end_node
         # drawing the path
